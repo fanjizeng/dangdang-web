@@ -1,0 +1,20 @@
+
+.head {
+  width: 100%;
+  position: sticky;
+  z-index: 99;
+  padding: 20px;
+  background-color: #fff;
+  top: 0;
+  .search-contain {
+    background-color: var(--van-slider-inactive-background);
+    .iconfont {
+      color: #333333;
+      font-size: 40px;
+    }
+    padding: 0 32px 0 20px;
+    border-radius: 1rem;
+    border: 2px solid #dcdee0;
+    width: 100%;
+  }
+}

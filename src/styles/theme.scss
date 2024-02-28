@@ -1,0 +1,11 @@
+:root:root {
+  --van-nav-bar-icon-color: $font-color;
+  --van-cell-vertical-padding: 12px;
+  --van-cell-horizontal-padding: 16px;
+}
+.van-field {
+  background-color: var(--van-slider-inactive-background);
+}
+.van-toast {
+  min-width: 350px;
+}
