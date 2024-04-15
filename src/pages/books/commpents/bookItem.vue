@@ -31,9 +31,8 @@
           <span>图书畅销总排行榜第1名</span>
         </div>
       </div>
-      <div class="empty" v-show="show">
-        库存所有书已经售完
-      </div>
+      <div class="empty" v-show="show">库存所有书已经售完</div>
+      <add-subtrsc :bookitem="item"></add-subtrsc>
     </div>
   </div>
 </template>
@@ -42,6 +41,7 @@
 import { ref } from 'vue'
 import getImg from '@/utils/imgUtils'
 import books from '../service'
+import AddSubtrsc from './addsubtrsc.vue'
 
 const { storeBookRefs } = books
 const { bookList } = storeBookRefs
@@ -49,108 +49,109 @@ const show = ref(false)
 </script>
 
 <style lang="scss" scoped>
-  .bookitem {
-    padding: 0 20px 40px;
+.bookitem {
+  padding: 0 20px 40px;
+  display: grid;
+  grid-template-columns: 240px auto;
+  justify-items: center;
+  column-gap: 20px;
+  .book-pic {
+    width: 100%;
+    height: 320px;
+    object-fit: contain;
+    box-sizing: border-box;
+  }
+  .bookinfo {
+    width: 100%;
     display: grid;
-    grid-template-columns: 240px auto;
-    justify-items: center;
-    column-gap: 20px;
-    .book-pic {
-      width: 100%;
-      height: 320px;
-      object-fit: contain;
-      box-sizing: border-box;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    .book-name {
+      font-size: 46px;
+      color: #4c4c4c;
     }
-    .bookinfo {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 30px;
-      .book-name {
-        font-size: 46px;
-        color: #4c4c4c;
+    .book-author-publs {
+      color: #848484;
+      font-size: 28px;
+      .spacing {
+        margin-right: 16px;
       }
-      .book-author-publs {
-        color: #848484;
-        font-size: 28px;
+    }
+    .bookinfo-other {
+      .price {
         .spacing {
           margin-right: 16px;
         }
-      }
-      .bookinfo-other {
-        .price {
-          .spacing {
-            margin-right: 16px;
-          }
-          .discountprice {
-            font-size: 32px;
-            color: #e94039;
-          }
-          .symbol {
-            font-size: 32px;
-          }
-        }
-        .discountPrice {
-          font-size: 36px;
-          font-weight: 500;
+        .discountprice {
+          font-size: 32px;
           color: #e94039;
         }
-        .originprice,
-        .discount {
-          color: #c6c6c6;
-          font-size: 30px;
-          text-align: 4px;
-        }
-        .originprice {
-          text-decoration:  line-through;
+        .symbol {
+          font-size: 32px;
         }
       }
-      .give {
-        display: flex;
-        line-height: 32px;
-        justify-content: flex-start;
-        gap: 6px;
-        font-size: 24px;
-        .self-support {
-          padding: 0 16px;
-          border-radius: 5px;
-          text-shadow: 0 1px #7f7f7f;
-          background-color: #eb636d;
-          color: white;
-        }
-        .coupons {
-          padding: 0 16px;
-          border-radius: 5px;
-          border: 2px #d06d70 solid;
-          background-color: #ffffff;
-          color: #7f7f7f;
-          text-shadow: 0 1px #d06d70;
-        }
-        .free-shipping {
-          padding: 0 16px;
-          border-radius: 5px;
-          border: 1px #d06d70 solid;
-          background-color: #ffffff;
-          color: #7f7f7f;
-          text-shadow: 0 1px #d06d70;
-        }
+      .discountPrice {
+        font-size: 36px;
+        font-weight: 500;
+        color: #e94039;
       }
-      .monthsalescount,
-      .ranklist {
-        color: #db8441;
-        font-size: 28px;
-        padding-top: 10px;
+      .originprice,
+      .discount {
+        color: #c6c6c6;
+        font-size: 30px;
+        text-align: 4px;
       }
-      .ranklist {
-        span {
-          padding: 8px;
-          background-color: #fef3ed;
-          white-space: nowrap;
-        }
+      .originprice {
+        text-decoration: line-through;
       }
     }
-    .empty {
-      font-size: 40px;
+    .give {
+      display: flex;
+      line-height: 32px;
+      justify-content: flex-start;
+      gap: 6px;
+      font-size: 24px;
+      .self-support {
+        padding: 0 16px;
+        border-radius: 5px;
+        text-shadow: 0 1px #7f7f7f;
+        background-color: #eb636d;
+        color: white;
+      }
+      .coupons {
+        padding: 0 16px;
+        border-radius: 5px;
+        border: 2px #d06d70 solid;
+        background-color: #ffffff;
+        color: #7f7f7f;
+        text-shadow: 0 1px #d06d70;
+      }
+      .free-shipping {
+        padding: 0 16px;
+        border-radius: 5px;
+        border: 1px #d06d70 solid;
+        background-color: #ffffff;
+        color: #7f7f7f;
+        text-shadow: 0 1px #d06d70;
+      }
+    }
+    .monthsalescount,
+    .ranklist {
+      width: 100%;
+      color: #db8441;
+      font-size: 28px;
+      padding-top: 10px;
+    }
+    .ranklist {
+      background-color: #fef3ed;
+      padding: 12px;
+      white-space: nowrap;
+      span {
+      }
     }
   }
+  .empty {
+    font-size: 40px;
+  }
+}
 </style>

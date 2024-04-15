@@ -27,7 +27,6 @@ function closeTag () {
   showTag.value = false
 }
 const { getThirdCtgy } = storeRefs
-console.log(getThirdCtgy, '--0000222')
 </script>
 
 <style lang="scss" scoped>

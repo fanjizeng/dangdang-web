@@ -5,8 +5,6 @@ import { defineStore } from 'pinia'
 import goodStorage from 'good-storage'
 
 function hasProps(obj: Record<string, any>) {
-  console.log(Object.getOwnPropertyNames(obj), '--000')
-
   return Boolean(Object.getOwnPropertyNames(obj).length)
 }
 export default defineStore('ctgyStore', {
@@ -42,7 +40,6 @@ export default defineStore('ctgyStore', {
       this.secondCtgyList = result.data
     },
     storeCtgy(thirdCtgy: ThirdCtgy) {
-      console.log(thirdCtgy, '存在')
       goodStorage.set('thirdCtgy', thirdCtgy)
       this.thirdCtgy = thirdCtgy
     }

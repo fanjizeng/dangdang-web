@@ -10,4 +10,12 @@ export interface BookInfo {
   'thirdctgyid': number
   'originalprice': number
   'discount': number
+  'discountprice': string
+  'purcharsenum': number
+}
+
+export interface thirdCtgyList {
+  thirdctgyid: number | null
+  thirdctgyname: string
+  secctgyid: number
 }

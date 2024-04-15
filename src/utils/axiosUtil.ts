@@ -5,9 +5,10 @@ const SERVER_ERR = '请求服务器的网址错误或网络连接失败'
 interface AxiosRequestConfig_ extends AxiosRequestConfig {
   isMock: boolean
 }
+
 type Method = 'get' | 'post' | 'put' | 'delete' | 'patch'
 const methods: Method[] = ['get', 'post', 'put', 'delete', 'patch']
-type ReqFn = (url: string, isMock: boolean, data?: any) => AxiosPromise<any>
+type ReqFn = (url: string, isMock: boolean, data?: any, config?: AxiosRequestConfig)=> Promise<any>
 interface ReqExecute {
   get: ReqFn
   post: ReqFn
@@ -60,7 +61,7 @@ class AxiosUtil {
   // 3.发送请求给服务器
   sendRequest(options: AxiosRequestConfig_) {
     if (conf.env === 'production') this.axiosInstance.defaults.baseURL = conf.baseApi
-    else if(conf.env === 'development') {
+    else if (conf.env === 'development') {
       const isMock: boolean = options.isMock || conf.isMock
       this.axiosInstance.defaults.baseURL = isMock ? conf.mockBaseApi : conf.baseApi
     }
@@ -70,11 +71,20 @@ class AxiosUtil {
   reqPrepare() {
     return methods.forEach(method => {
       this.request[method] = (url, isMock, data) => {
-        return this.sendRequest({
-          url,
-          isMock,
-          data
-        })
+        if (method === 'get') {
+          return this.sendRequest({
+            url,
+            isMock,
+            params: data
+          })
+        } else {
+          return this.sendRequest({
+            url,
+            isMock,
+            data,
+            method
+          })
+        }
       }
     })
   }

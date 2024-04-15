@@ -1,8 +1,10 @@
 import request from '@/utils/axiosUtil'
 
-interface reqBooks {
-  thirdctgyid: number
+export interface reqBooks {
+  thirdctgyid: number | null
   secondctgyid: number
+  sortField: string
+  ascOrDesc: 'asc' | 'desc'
 }
 class BooksAPI {
   static api: BooksAPI = new BooksAPI()

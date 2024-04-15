@@ -18,7 +18,8 @@ export class LoadImgUtil {
     let absolutePath: string = '' //绝对路径
     let imgName: string = ''
     for(const relativePath in imgMap) {
-      absolutePath = imgMap[relativePath].default
+      // 默认拿到的地址是被编码过的，需要解码才能匹配上
+      absolutePath = decodeURI(imgMap[relativePath].default)
       if(absolutePath) {
         imgName = absolutePath.substring(absolutePath.lastIndexOf('/') + 1)
         if(imgName.includes('?t=')) {

@@ -2,6 +2,10 @@ import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   {
+    path: '/',
+    redirect: '/ctgy'
+  },
+  {
     path: '/ctgy',
     name: '分类页面',
     meta: {

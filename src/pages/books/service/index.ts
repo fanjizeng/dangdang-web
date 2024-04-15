@@ -1,9 +1,12 @@
 import { ref, Ref } from 'vue'
 import router from '@/router'
 import { storeToRefs } from 'pinia'
+import { BookInfo, thirdCtgyList } from '@/piniastore/books/state'
+import { reqBooks } from '@/api/BooksApi'
 import CtgyStore from '@/piniastore/ctgy'
 import BookStore from '@/piniastore/books'
 import ctgyApi from '@/api/CtgyApi'
+import ShopCart from './shopcart'
 
 interface thirdCtgyDetail {
   thirdctgyid: number
@@ -13,11 +16,6 @@ interface thirdCtgyDetail {
   firstctgyname: string
   firstCtgyId: number
 }
-interface thirdCtgyList {
-  thirdctgyid: number
-  thirdctgyname: string
-  secctgyid: number
-}
 
 class Books {
   static store = CtgyStore()
@@ -26,7 +24,10 @@ class Books {
   static storeBookRefs = storeToRefs(Books.bookStore)
   static ctgyDetail: Ref<thirdCtgyDetail> = ref({}) as Ref<thirdCtgyDetail>
   static thirdList: Ref<thirdCtgyList[]> = ref([]) as Ref<thirdCtgyList[]>
-  static currencyThirdId: Ref<number> = ref(0)
+  static currencyThird: Ref<reqBooks> = ref({
+    sortField: '',
+    ascOrDesc: 'desc'
+  } as reqBooks)
   static goBack() {
     router.back()
   }
@@ -38,17 +39,46 @@ class Books {
     const res = await ctgyApi.getThirdBySecId(secctgyid)
     Books.thirdList.value = res.data
     Books.thirdList.value.unshift({
-      secctgyid: 0,
-      thirdctgyid: 0,
+      secctgyid: Books.ctgyDetail.value.secctgyid,
+      thirdctgyid: null,
       thirdctgyname: '全部'
     })
   }
-  static async findBooksList(thirdctgyid: number) {
-    await Books.bookStore.findBooksList(thirdctgyid)
+  static async findBooksList(reqBooks: reqBooks) {
+    await Books.bookStore.findBooksList(reqBooks)
+    await ShopCart.findCurUserShopCartLst()
+    Books.uptBookNumWithSCLstNum()
   }
-  static checkThirdCtgy(thirdctgyid: number) {
-    Books.currencyThirdId.value = thirdctgyid
-    Books.findBooksList(thirdctgyid)
+  static checkThirdCtgy(third: thirdCtgyList) {
+    Books.currencyThird.value.thirdctgyid = third.thirdctgyid,
+      Books.currencyThird.value.secondctgyid = third.secctgyid
+    Books.store.storeCtgy(third)
+    Books.findBooksList(Books.currencyThird.value)
+  }
+  static sortBook(sortField: string) {
+    Books.currencyThird.value.sortField = sortField
+    if (sortField === 'originalprice') {
+      Books.currencyThird.value.ascOrDesc = Books.currencyThird.value.ascOrDesc === 'desc' ? 'asc' : 'desc'
+    }
+    Books.findBooksList(Books.currencyThird.value)
+  }
+  static updateBookNum(bookNum: number, curbookisbn?: string) {
+    const booklist = Books.bookStore.getBookList
+    let book: BookInfo
+    for (let i = 0; i < booklist.length; i++) {
+      book = booklist[i]
+      if (curbookisbn && curbookisbn === book.ISBN) {
+        book.purcharsenum = bookNum
+        break
+      } else if( !curbookisbn ) {
+        book.purcharsenum = bookNum
+      }
+    }
+    return booklist
+  }
+  static uptBookNumWithSCLstNum() {
+    const booklist = Books.updateBookNum(0)
+    ShopCart.uptBookNumWithSCLstNum(booklist)
   }
 }
 export default Books

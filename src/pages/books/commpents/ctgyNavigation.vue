@@ -6,10 +6,10 @@
   </div>
   <div class="nav-all">
     <div
-      :class="{ 'nav-item': true, 'active-nav': item.thirdctgyid === currencyThirdId }"
+      :class="{ 'nav-item': true, 'active-nav': item.thirdctgyid === currencyThird.thirdctgyid }"
       v-for="item in thirdList"
       :key="item.thirdctgyid"
-      @click="checkThirdCtgy(item.thirdctgyid)"
+      @click="checkThirdCtgy(item)"
       >
       {{ item.thirdctgyname }}
     </div>
@@ -21,13 +21,14 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Books from '../service'
 
-const { ctgyDetail, currencyThirdId, thirdList, findBooksList, getCtgysDetail, getThirdList, checkThirdCtgy } = Books
+const { ctgyDetail, currencyThird, thirdList, findBooksList, getCtgysDetail, getThirdList, checkThirdCtgy } = Books
 const route = useRoute()
 onMounted(async () => {
-  currencyThirdId.value = Number(route.query.thirdCtgyid)
-  await getCtgysDetail(currencyThirdId.value)
+  currencyThird.value.thirdctgyid = Number(route.query.thirdCtgyid)
+  await getCtgysDetail(currencyThird.value.thirdctgyid)
+  currencyThird.value.secondctgyid = Number(ctgyDetail.value.secctgyid)
   getThirdList(ctgyDetail.value.secctgyid)
-  findBooksList(currencyThirdId.value)
+  findBooksList(currencyThird.value)
 })
 </script>
 
