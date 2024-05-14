@@ -7,7 +7,7 @@
         {{ getThirdCtgy.thirdctgyname }}
         <van-icon name="cross" @click="closeTag" />
       </div>
-      <van-field :disabled="showTag" v-model="searchValue" placeholder="请输入搜索书名" />
+      <van-field :disabled="true" v-model="searchValue" placeholder="请输入搜索书名" @click="goSearch" />
     </div>
     <div class="head-ellipsis">
       <span class="iconfont icon-shenglvehao"></span>
@@ -27,6 +27,13 @@ function closeTag () {
   showTag.value = false
 }
 const { getThirdCtgy } = storeRefs
+const router = useRouter()
+const goSearch = () => {
+  console.log('789')
+  router.push({
+    path: '/search'
+  })
+}
 </script>
 
 <style lang="scss" scoped>

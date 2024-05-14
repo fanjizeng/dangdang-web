@@ -1,10 +1,10 @@
-import { ref, Ref } from 'vue'
+import { ref, Ref, computed } from 'vue'
+import router from '@/router'
 import { storeToRefs } from 'pinia'
 import ShopCartStore from '@/piniastore/shopCart'
 import { BookInfo } from '@/piniastore/books/state'
 import { ShopCart } from '@/piniastore/shopCart/state'
 import { showConfirmDialog } from 'vant';
-import { computed } from 'vue'
 import Books from './index'
 
 type BallType = { showorhidden: boolean; addBtnTarget?: EventTarget | null }
@@ -12,6 +12,14 @@ class ShopCartClass {
   static store = ShopCartStore()
   static storeRefs = storeToRefs(ShopCartClass.store)
   static ball: Ref<BallType> = ref({ showorhidden: false })
+  static isSelectAll: Ref<boolean> = ref(false)
+  static selectAll() {
+    const shopCartList = ShopCartClass.store.getShopCartList.map((shopcart: ShopCart) => {
+      shopcart.checked = !ShopCartClass.isSelectAll.value
+      return shopcart
+    })
+    ShopCartClass.store.storeShopCartList(shopCartList)
+  }
   static async findCurUserShopCartLst() {
     await ShopCartClass.store.findCurUserShopCartLst(1)
     console.log('shopCartList:', ShopCartClass.store.getShopCartList)
@@ -30,7 +38,7 @@ class ShopCartClass {
   }
   static uptBookNumWithSCLstNum(books: BookInfo[]) {
     const shopCartList = ShopCartClass.store.getShopCartList
-    shopCartList.forEach(shopcart => {
+    shopCartList.forEach((shopcart: ShopCart) => {
       books.forEach(book => {
         if (shopcart.bookisbn === book.ISBN) {
           book.purcharsenum = shopcart.purcharsenum
@@ -55,6 +63,16 @@ class ShopCartClass {
     ShopCartClass.ball.value.showorhidden = true
     ShopCartClass.ball.value.addBtnTarget = event.currentTarget
   }
+  static async appOrSubtrBookInShopCart(shopCart: ShopCart, event: Event) {
+    const curTarget = <HTMLBodyElement>event.currentTarget
+    const className = curTarget.className
+    if (className.includes('plus')) {
+      shopCart.purcharsenum = shopCart.purcharsenum + 1
+    } else if (className.includes('minus')) {
+      shopCart.purcharsenum = shopCart.purcharsenum - 1
+    }
+    await ShopCartClass.store.appOrSubtrBookFrmShopCart(shopCart!)
+  }
   static async appOrSubtrBookFrmShopCart(bookitem: BookInfo, event: Event) {
     const curShopCartId = ShopCartClass.getExistsShopCartID(bookitem)
     const curTarget = <HTMLBodyElement>event.currentTarget
@@ -78,6 +96,19 @@ class ShopCartClass {
     await ShopCartClass.store.appOrSubtrBookFrmShopCart(shopcart)
     Books.updateBookNum(purcharsenum, bookitem.ISBN)
   }
+  static delCurBookInSC(shopCart: ShopCart) {
+    showConfirmDialog({
+      title: '删除提示',
+      message:
+        '是否将此书移出购物车',
+    })
+      .then(async () => {
+        await ShopCartClass.store.delBookFrmSC(shopCart.shopcartid!)
+      })
+      .catch(() => {
+        // on cancel
+      });
+  }
   static delCurBookFrmSC(bookitem: BookInfo) {
     showConfirmDialog({
       title: '删除提示',
@@ -98,8 +129,10 @@ class ShopCartClass {
       let totalCount_ = 0
       const shopcartlist = ShopCartClass.store.getShopCartList
       if (shopcartlist && shopcartlist.length > 0) {
-        shopcartlist.forEach((shopcart) => {
-          totalCount_ += shopcart.purcharsenum
+        shopcartlist.forEach((shopcart: ShopCart) => {
+          if(shopcart.checked) {
+            totalCount_ += shopcart.purcharsenum
+          }
         })
       }
       return totalCount_
@@ -108,8 +141,10 @@ class ShopCartClass {
       let totalPrice_ = 0
       const shopcartlist = ShopCartClass.store.getShopCartList
       if (shopcartlist && shopcartlist.length > 0) {
-        shopcartlist.forEach((shopcart) => {
-          totalPrice_ += shopcart.bookprice * shopcart.purcharsenum
+        shopcartlist.forEach((shopcart: ShopCart) => {
+          if(shopcart.checked) {
+            totalPrice_ += shopcart.bookprice * shopcart.purcharsenum
+          }
         })
       }
       return procDecimalZero(totalPrice_)
@@ -142,6 +177,16 @@ class ShopCartClass {
   static afterDrop(ele: Element) { 
     ShopCartClass.ball.value.showorhidden = false
     ShopCartClass.ball.value.addBtnTarget = undefined
+  }
+  static jumpShopcart() {
+    router.push('/shopcartlist')
+  }
+  static checkEveryCheckBox() {
+    const isSelectAll = ShopCartClass.store.getShopCartList.every(shopcart => {
+      return shopcart.checked
+    })
+    ShopCartClass.store.storeShopCartList(ShopCartClass.store.getShopCartList)
+    ShopCartClass.isSelectAll.value = isSelectAll
   }
 }
 function procDecimalZero(num: number) {

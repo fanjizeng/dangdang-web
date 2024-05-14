@@ -26,10 +26,10 @@ export default ({ command, mode }) => {
       // 自定义组件没有类型提示问题：在tsconfig的include中加入"./components.d.ts"即可解决
       // Vant 中有个别组件是以函数的形式提供的，包括 Toast，Dialog，Notify 和 ImagePreview 组件。
       // 在使用函数组件时，unplugin-vue-components 无法自动引入对应的样式，因此需要手动引入样式。
-      // importStyle: false，关闭自动导入样式
+      // VantResolver({ importStyle: false }):关闭自动导入样式，关闭会导致vant样式变小，建议默认
       // 目前无法指定"src/compoents"下部分组件生产类型声明，可能需要自己实现一个resolvers
       Components({
-        resolvers: [VantResolver({ importStyle: false })],
+        resolvers: [VantResolver()],
         // globs: ['src/components/**/index.vue'], // 会导致index.vue生成的类型声明为Undefined
       })
     ],

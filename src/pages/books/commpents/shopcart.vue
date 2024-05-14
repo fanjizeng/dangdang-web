@@ -5,7 +5,7 @@
         <van-icon name="shopping-cart-o" />
       </van-badge>
     </div>
-    <div class="content-right">
+    <div class="content-right" @click="jumpShopcart">
       <span class="cost">¥{{ totalPrice }}</span>
       <span class="pay-font">去支付<van-icon name="arrow" /></span>
     </div>
@@ -22,7 +22,7 @@
 <script setup>
 import ShopCartClass from '../service/shopcart'
 
-const { beforeDrop, dropping, afterDrop, ball } = ShopCartClass
+const { beforeDrop, dropping, afterDrop, ball, jumpShopcart } = ShopCartClass
 const { totalCount, totalPrice } = ShopCartClass.refreshShopCartList()
 </script>
 

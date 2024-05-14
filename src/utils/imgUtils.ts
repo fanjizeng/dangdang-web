@@ -14,7 +14,6 @@ export class LoadImgUtil {
   }
   static loadAllImg() {
     const imgMap = import.meta.glob('../assets/img/**/*.png', { eager: true })
-    console.log(imgMap, 'img')
     let absolutePath: string = '' //绝对路径
     let imgName: string = ''
     for(const relativePath in imgMap) {

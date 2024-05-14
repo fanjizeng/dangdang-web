@@ -9,7 +9,7 @@ export interface reqBooks {
 class BooksAPI {
   static api: BooksAPI = new BooksAPI()
   getBooksByThirdId(reqBooks: reqBooks) {
-    return request.get(`/dang/booksmodule/findBooksByThirdCtgyId`, false, reqBooks)
+    return request.get('/dang/booksmodule/findBooksByThirdCtgyId', false, reqBooks)
   }
 }
 

@@ -5,6 +5,7 @@ import { BookInfo, thirdCtgyList } from '@/piniastore/books/state'
 import { reqBooks } from '@/api/BooksApi'
 import CtgyStore from '@/piniastore/ctgy'
 import BookStore from '@/piniastore/books'
+import ShopStore from '@/piniastore/shopCart'
 import ctgyApi from '@/api/CtgyApi'
 import ShopCart from './shopcart'
 
@@ -21,6 +22,7 @@ class Books {
   static store = CtgyStore()
   static storeRefs = storeToRefs(Books.store)
   static bookStore = BookStore()
+  static shopStore = ShopStore()
   static storeBookRefs = storeToRefs(Books.bookStore)
   static ctgyDetail: Ref<thirdCtgyDetail> = ref({}) as Ref<thirdCtgyDetail>
   static thirdList: Ref<thirdCtgyList[]> = ref([]) as Ref<thirdCtgyList[]>
@@ -46,7 +48,10 @@ class Books {
   }
   static async findBooksList(reqBooks: reqBooks) {
     await Books.bookStore.findBooksList(reqBooks)
-    await ShopCart.findCurUserShopCartLst()
+    const shopcartList = Books.shopStore.ShopCartList
+    if(!shopcartList || shopcartList.length === 0) {
+      await ShopCart.findCurUserShopCartLst()
+    }
     Books.uptBookNumWithSCLstNum()
   }
   static checkThirdCtgy(third: thirdCtgyList) {

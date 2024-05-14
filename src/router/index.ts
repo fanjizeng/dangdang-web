@@ -21,6 +21,22 @@ const routes: Array<RouteRecordRaw> = [
     },
     component: () => import('@/pages/books/index.vue')
   },
+  {
+    path: '/shopcartlist',
+    name: '购物车列表',
+    meta: {
+      title: '购物车',
+    },
+    component: () => import('@/pages/shopcartlist/index.vue')
+  },
+  {
+    path: '/search',
+    name: '搜索',
+    meta: {
+      title: '搜索',
+    },
+    component: () => import('@/pages/search/index.vue')
+  },
   // 替代vue2中的'*'通配符路径
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ]

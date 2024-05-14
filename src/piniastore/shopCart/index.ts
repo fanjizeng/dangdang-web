@@ -11,11 +11,15 @@ export default defineStore('shopCartStore', {
     }
   },
   getters: {
-    getShopCartList(state) {
-      return state.ShopCartList.length > 0 ? state.ShopCartList : []
+    getShopCartList(state): ShopCart[] {
+      return state.ShopCartList.length > 0 ? state.ShopCartList : storage.get('shopcartlist')
     }
   },
   actions: {
+    storeShopCartList(shopCartList: ShopCart[]) {
+      this.ShopCartList = shopCartList
+      storage.set('shopcartlist', shopCartList)
+    },
     async findCurUserShopCartLst(userid: number) {
       const result: AxiosResponse<ShopCart[]> = await ShopCartApi.getShopCartList(userid)
       this.ShopCartList = result.data
@@ -23,13 +27,17 @@ export default defineStore('shopCartStore', {
     },
     async addBookToShopCart(shopCart: ShopCart) {
       const result = await ShopCartApi.addBookToShopCart(shopCart)
-      const dbShopCart: ShopCart = result.data
-      const shopCartlist: ShopCart[] = storage.set('shopcartlist', dbShopCart, OPTION.ADDORAPPOBJTOARR, 'shopcartid', dbShopCart.shopcartid)
-      this.ShopCartList = shopCartlist
+      this.ShopCartList = storeShopCart(result)
     },
     async appOrSubtrBookFrmShopCart(shopCart: ShopCart) {
       await ShopCartApi.appOrSubtrBookFrmShopCart(shopCart)
-      const shopCartlist: ShopCart[] = storage.set('shopcartlist', shopCart, OPTION.ADDORAPPOBJTOARR, 'shopcartid', shopCart.shopcartid)
+      shopCart.checked = true
+      const shopCartlist: ShopCart[] = storage.set(
+        'shopcartlist',
+        shopCart,
+        OPTION.ADDORAPPOBJTOARR,
+        'shopcartid',
+        shopCart.shopcartid)
       this.ShopCartList = shopCartlist
     },
     async delBookFrmSC(shopcartid: number) {
@@ -43,3 +51,16 @@ export default defineStore('shopCartStore', {
     }
   }
 })
+
+function storeShopCart(result: AxiosResponse<ShopCart>) {
+  const dbShopCart:ShopCart = result.data
+  dbShopCart.checked = true
+  const shopCartList: ShopCart[] = storage.set(
+    'shopCartList',
+    dbShopCart,
+    OPTION.ADDORAPPOBJTOARR,
+    'shopcartid',
+    dbShopCart.shopcartid
+  )
+  return shopCartList
+}
