@@ -19,3 +19,9 @@ export interface thirdCtgyList {
   thirdctgyname: string
   secctgyid: number
 }
+
+export type CurPageDataType = {
+  curPageDataList: BookInfo[]
+  totalPageNumber: number
+  curPageNo: number
+}

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import searchApi from '../../api/SearchApi'
 import { AxiosResponse } from 'axios'
 import storage, { OPTION } from '@/utils/goodStorageUtil'
-
 export const initKeywordVal = '请输入搜索图书关键字'
 export default defineStore('searchStore', {
   state: () => {
@@ -19,9 +18,16 @@ export default defineStore('searchStore', {
     },
     getHistoryKeywordObjList(state): HistoryKeyword[] {
       return state.historyKeywordObjList.length > 0 ? state.historyKeywordObjList : storage.get('historyKeywordObjList')
+    },
+    getAutoCompKeyword(state) {
+      return state.autoCompKeyword.length > 0 ? state.autoCompKeyword : storage.get('autoCompKeyword')
     }
   },
   actions: {
+    storeAutoCompKeyword(autoCompKeyword: string) {
+      this.autoCompKeyword = autoCompKeyword
+      storage.set('autoCompKeyword', autoCompKeyword)
+    },
     storeKeyword(keyword: string = '') {
       this.keyword = keyword
     },
@@ -72,10 +78,12 @@ type initStateType = {
   keywordList: Keyword[]
   historyKeywordList: string[]
   historyKeywordObjList: HistoryKeyword[]
+  autoCompKeyword: string
 }
 const initState: initStateType = {
   keyword: initKeywordVal,
   keywordList: [],
   historyKeywordList: [],
-  historyKeywordObjList: []
+  historyKeywordObjList: [],
+  autoCompKeyword: ''
 }

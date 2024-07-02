@@ -1,13 +1,13 @@
 <template>
   <div class="head flex-ac">
     <van-icon name="arrow-left" @click="goBack" />
-    <div class="search-contain flex-ac">
+    <div class="search-contain flex-ac" @click="goSearch">
       <span class="iconfont icon-sousuo"></span>
       <div class="tosearch-keyword" v-if="showTag">
         {{ getThirdCtgy.thirdctgyname }}
         <van-icon name="cross" @click="closeTag" />
       </div>
-      <van-field :disabled="true" v-model="searchValue" placeholder="请输入搜索书名" @click="goSearch" />
+      <van-field :disabled="true" v-model="searchValue" placeholder="请输入搜索书名" />
     </div>
     <div class="head-ellipsis">
       <span class="iconfont icon-shenglvehao"></span>
@@ -29,7 +29,6 @@ function closeTag () {
 const { getThirdCtgy } = storeRefs
 const router = useRouter()
 const goSearch = () => {
-  console.log('789')
   router.push({
     path: '/search'
   })

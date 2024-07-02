@@ -1,35 +1,36 @@
 <template>
   <div class="shopcartlist">
     <div class="header flex-sc">
-      <van-icon class="back" name="arrow-left" @click="back"/>
-      <input type="checkbox" class="check" v-model="isSelectAll" @click="selectAll()"/>
+      <van-icon class="back" name="arrow-left" @click="back" />
+      <input type="checkbox" class="check" v-model="isSelectAll" @click="selectAll()" />
       <span class="danglabel">当当网</span>
     </div>
-    <div class="items" v-for="shopcartitem in getShopCartList" :key="shopcartitem.bookisbn">
-      <div class="item">
-        <div class="content flex-sc">
-          <input type="checkbox" v-model="shopcartitem.checked" @change="checkEveryCheckBox" class="check" />
-          <div class="pic">
-            <img class="bookimg" :src="getImg(shopcartitem.bookpicname)" alt="" />
-          </div>
-          <div class="descri">
-            <div class="book-title">{{ shopcartitem.bookname }}</div>
-            <div class="price flex-sc">
-              <span class="curprice">¥{{ shopcartitem.bookprice }}</span>
-              <Addsubtrsc :shopcart="shopcartitem"></Addsubtrsc>
+    <div v-if="getShopCartList && getShopCartList.length > 0">
+      <div class="items" v-for="shopcartitem in getShopCartList" :key="shopcartitem.bookisbn">
+        <div class="item">
+          <div class="content flex-sc">
+            <input type="checkbox" v-model="shopcartitem.checked" @change="checkEveryCheckBox" class="check" />
+            <div class="pic">
+              <img class="bookimg" :src="getImg(shopcartitem.bookpicname)" alt="" />
+            </div>
+            <div class="descri">
+              <div class="book-title">{{ shopcartitem.bookname }}</div>
+              <div class="price flex-sc">
+                <span class="curprice">¥{{ shopcartitem.bookprice }}</span>
+                <Addsubtrsc :shopcart="shopcartitem"></Addsubtrsc>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="cal flex-sc">
+        <input type="checkbox" class="check" />
+        <span class="checkall"> 全选 </span>
+        <span class="payall">合计：¥{{ totalPrice }}</span>
+        <button class="pay" @click="goAccount">去结算({{ totalCount }})</button>
+      </div>
     </div>
-    <div class="cal flex-sc">
-      <input type="checkbox" class="check" />
-      <span class="checkall">
-        全选
-      </span>
-      <span class="payall">合计：¥{{ totalPrice }}</span>
-      <button class="pay">去结算({{ totalCount }})</button>
-    </div>
+    <van-empty v-else image="search" description="当前购物车为空，请快去添加吧" />
   </div>
 </template>
 
@@ -37,7 +38,7 @@
 import getImg from '@/utils/imgUtils'
 import ShopCartClass from '../books/service/shopcart'
 import Addsubtrsc from '../books/commpents/addsubtrsc.vue'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const back = () => {
@@ -46,6 +47,11 @@ const back = () => {
 const { isSelectAll, selectAll, checkEveryCheckBox } = ShopCartClass
 const { getShopCartList } = ShopCartClass.storeRefs
 const { totalCount, totalPrice } = ShopCartClass.refreshShopCartList()
+const goAccount = ()=> {
+  router.push({
+    path: '/order'
+  })
+}
 </script>
 
 <style lang="scss" scoped>

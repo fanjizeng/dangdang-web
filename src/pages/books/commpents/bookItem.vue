@@ -1,8 +1,8 @@
 <template>
   <div class="bookitem" v-for="item in bookList" :key="item.ISBN">
-    <img class="book-pic" :src="getImg(item.bookpicname)" />
+    <img class="book-pic" @click="openBook(item.ISBN)" :src="getImg(item.bookpicname)" />
     <div class="bookinfo">
-      <div class="bookinfo-breief">
+      <div class="bookinfo-breief"  @click="openBook(item.ISBN)">
         <div class="book-name">{{ item.bookname }}</div>
         <div class="book-author-publs">
           <span class="author spacing">{{ item.author }}</span>
@@ -43,7 +43,7 @@ import getImg from '@/utils/imgUtils'
 import books from '../service'
 import AddSubtrsc from './addsubtrsc.vue'
 
-const { storeBookRefs } = books
+const { storeBookRefs, openBook } = books
 const { bookList } = storeBookRefs
 const show = ref(false)
 </script>

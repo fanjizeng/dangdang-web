@@ -5,6 +5,7 @@
       <second-ctgy></second-ctgy>
       <third-ctgy></third-ctgy>
     </div>
+    <Bottom></Bottom>
   </div>
 </template>
 
@@ -12,6 +13,7 @@
 import headSearch from './commpents/search.vue'
 import secondCtgy from './commpents/secondCtgy.vue'
 import thirdCtgy from './commpents/thirdCtgy.vue'
+import Bottom from '@/components/bottom/index.vue'
 // import FstToThrdCtgy from './service'
 import FstToThrdCtgy from './piniaservice'
 

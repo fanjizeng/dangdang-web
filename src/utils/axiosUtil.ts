@@ -1,5 +1,9 @@
 import axios, { AxiosInstance, AxiosPromise, AxiosRequestConfig } from 'axios'
 import conf from '@/config'
+import storage from '@/utils/goodStorageUtil'
+import router from '@/router'
+import { showToast } from 'vant';
+
 const SERVER_ERR = '请求服务器的网址错误或网络连接失败'
 
 interface AxiosRequestConfig_ extends AxiosRequestConfig {
@@ -8,7 +12,7 @@ interface AxiosRequestConfig_ extends AxiosRequestConfig {
 
 type Method = 'get' | 'post' | 'put' | 'delete' | 'patch'
 const methods: Method[] = ['get', 'post', 'put', 'delete', 'patch']
-type ReqFn = (url: string, isMock: boolean, data?: any, config?: AxiosRequestConfig)=> Promise<any>
+type ReqFn = (url: string, isMock: boolean, data?: any, config?: AxiosRequestConfig) => Promise<any>
 interface ReqExecute {
   get: ReqFn
   post: ReqFn
@@ -40,6 +44,10 @@ class AxiosUtil {
   // 1.请求开始之前的请求拦截器
   beforeReqIntercpt() {
     this.axiosInstance.interceptors.request.use((request) => {
+      const token = storage.get('token')
+      const headers = request.headers
+      if (!headers.authorization && token)
+        headers.authorization = `Bearer ${token}`
       return request
     })
   }
@@ -51,7 +59,15 @@ class AxiosUtil {
       else if (code === 500) {
         console.log(`发生了错误${msg}`)
         return
-      } else {
+      } else if (code === 401) {
+        if (msg === '这是不合法或过期的token') {
+          storage.set('token', '')
+          showToast(msg)
+          router.push({ path: '/login' })
+          throw new Error(msg)
+        }
+      }
+      else {
         console.log(SERVER_ERR)
       }
     }, (err) => {

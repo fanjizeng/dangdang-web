@@ -4,10 +4,11 @@ import { storeToRefs } from 'pinia'
 import { BookInfo, thirdCtgyList } from '@/piniastore/books/state'
 import { reqBooks } from '@/api/BooksApi'
 import CtgyStore from '@/piniastore/ctgy'
-import BookStore from '@/piniastore/books'
+import BookStore, { Operate } from '@/piniastore/books'
 import ShopStore from '@/piniastore/shopCart'
 import ctgyApi from '@/api/CtgyApi'
 import ShopCart from './shopcart'
+import { getValArrOfObj } from '@/utils/goodStorageUtil'
 
 interface thirdCtgyDetail {
   thirdctgyid: number
@@ -30,6 +31,11 @@ class Books {
     sortField: '',
     ascOrDesc: 'desc'
   } as reqBooks)
+  static isAutocompSearch = ref(false)
+  static isReadyOpen = ref(false)
+  static getOperate() {
+    Books.isAutocompSearch.value = Books.bookStore.getOperate === Operate.AUTOCOMPKEYWORD ? true : false
+  }
   static goBack() {
     router.back()
   }
@@ -46,10 +52,28 @@ class Books {
       thirdctgyname: '全部'
     })
   }
+  static searcnBooks(reqBooks: reqBooks) {
+    const operate = Books.bookStore.getOperate
+    console.log(operate, '分类')
+    if (operate === Operate.AUTOCOMPKEYWORD) Books.findByAutoCompKeyword()
+    else Books.findBooksList(reqBooks)
+  }
+  static async findByAutoCompKeyword() {
+    const autoCompKeyword = Books.bookStore.getAutoCompKeyword
+    console.log(autoCompKeyword, '不全')
+    await Books.bookStore.findBooksByAutoCompKeyword(autoCompKeyword)
+    const bookList = Books.bookStore.getBookList
+    const ctgy = {
+      secctgyid: bookList[0].secondctgyid,
+      thirdctgyid: null,
+      thirdctgyname: '全部'
+    }
+    Books.store.storeCtgy(ctgy)
+  }
   static async findBooksList(reqBooks: reqBooks) {
     await Books.bookStore.findBooksList(reqBooks)
     const shopcartList = Books.shopStore.ShopCartList
-    if(!shopcartList || shopcartList.length === 0) {
+    if (!shopcartList || shopcartList.length === 0) {
       await ShopCart.findCurUserShopCartLst()
     }
     Books.uptBookNumWithSCLstNum()
@@ -59,6 +83,15 @@ class Books {
       Books.currencyThird.value.secondctgyid = third.secctgyid
     Books.store.storeCtgy(third)
     Books.findBooksList(Books.currencyThird.value)
+  }
+  static init() {
+    Books.getOperate()
+    Books.findPublisersByAutoCompkey()
+  }
+  static async findPublisersByAutoCompkey() {
+    if(Books.bookStore.getOperate === Operate.AUTOCOMPKEYWORD) {
+      await Books.bookStore.findPublishersByAutoCompKeyword()
+    }
   }
   static sortBook(sortField: string) {
     Books.currencyThird.value.sortField = sortField
@@ -75,7 +108,7 @@ class Books {
       if (curbookisbn && curbookisbn === book.ISBN) {
         book.purcharsenum = bookNum
         break
-      } else if( !curbookisbn ) {
+      } else if (!curbookisbn) {
         book.purcharsenum = bookNum
       }
     }
@@ -84,6 +117,16 @@ class Books {
   static uptBookNumWithSCLstNum() {
     const booklist = Books.updateBookNum(0)
     ShopCart.uptBookNumWithSCLstNum(booklist)
+  }
+  static async findBksBypublishIds() {
+    const publisherids = getValArrOfObj(Books.bookStore.publisherList, 'publishid')
+    await Books.bookStore.findBksBypublishIds(publisherids)
+  }
+  static openBook(isbn: string) {
+    Books.bookStore.storeISBN(isbn)
+    router.push({
+      path: 'bookdetail'
+    })
   }
 }
 export default Books

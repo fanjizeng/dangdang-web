@@ -1,21 +1,35 @@
 import { AxiosResponse } from 'axios'
 import { defineStore } from 'pinia'
 import ShopCartApi from '@/api/ShopCartApi'
-import { ShopCart, initShopcart } from './state'
+import { ShopCart, initShopcart, chkedSCLst, subShkedSCLst } from './state'
 import storage, { OPTION } from '@/utils/goodStorageUtil'
 
 export default defineStore('shopCartStore', {
   state: () => {
     return {
-      ShopCartList: initShopcart
+      ShopCartList: initShopcart,
+      chkedSCLst,
+      subShkedSCLst
     }
   },
   getters: {
     getShopCartList(state): ShopCart[] {
       return state.ShopCartList.length > 0 ? state.ShopCartList : storage.get('shopcartlist')
+    },
+    getChkedSCLst(state): ShopCart[] {
+      return state.chkedSCLst.length > 0 ? state.chkedSCLst : storage.get('chkedSCLst')
+    },
+    getSubShkedSCLst(state): ShopCart[] {
+      return state.subShkedSCLst
     }
   },
   actions: {
+    setChkedSCLst() {
+      this.chkedSCLst = this.getShopCartList.filter(shopCart => {
+        return shopCart.checked
+      })
+      storage.set('chkedSCLst', this.chkedSCLst)
+    },
     storeShopCartList(shopCartList: ShopCart[]) {
       this.ShopCartList = shopCartList
       storage.set('shopcartlist', shopCartList)

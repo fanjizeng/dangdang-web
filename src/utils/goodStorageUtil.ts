@@ -10,7 +10,7 @@ const isPlainObject = (val: unknown): val is object =>
 
 type EleOfArr<T> = T extends Array<infer E> ? E : never
 
-function getValArrOfObj<T extends any[], K extends keyof EleOfArr<T>, E = EleOfArr<T>>(t: T, k: K) {
+export function getValArrOfObj<T extends any[], K extends keyof EleOfArr<T>, E = EleOfArr<T>>(t: T, k: K) {
   return t.map(({ [k]: v }: E) => v, {})
 }
 function isString(val: any): val is string {
@@ -20,6 +20,7 @@ class Storage {
   static storage: Storage = new Storage()
   public set(key: string, value: string): any
   public set(key: string, value: object): any
+  public set(key: string, value: any): any
   public set(key: string, value: any[]): any
   public set(key: string, value: any[], option: OPTION): any
   public set(key: string, value: string, option: OPTION): any
@@ -60,7 +61,7 @@ class Storage {
     }
   }
 
-  get(key: string): any
+  get<T>(key: string): T
   get(key: string, option: OPTION): any
   get(key: string, option: OPTION = OPTION.NONE) {
     if (option === OPTION.ACCUMU || option === OPTION.ADDORAPPOBJTOARR) return goodStorage.get(key, [])

@@ -21,14 +21,15 @@ import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import Books from '../service'
 
-const { ctgyDetail, currencyThird, thirdList, findBooksList, getCtgysDetail, getThirdList, checkThirdCtgy } = Books
+const { ctgyDetail, currencyThird, thirdList, searcnBooks, getCtgysDetail, getThirdList, checkThirdCtgy } = Books
+const { getThirdCtgy } = Books.storeRefs
 const route = useRoute()
 onMounted(async () => {
-  currencyThird.value.thirdctgyid = Number(route.query.thirdCtgyid)
+  currencyThird.value.thirdctgyid = Number(route.query.thirdCtgyid) || getThirdCtgy.value.thirdctgyid as number
   await getCtgysDetail(currencyThird.value.thirdctgyid)
   currencyThird.value.secondctgyid = Number(ctgyDetail.value.secctgyid)
   getThirdList(ctgyDetail.value.secctgyid)
-  findBooksList(currencyThird.value)
+  searcnBooks(currencyThird.value)
 })
 </script>
 

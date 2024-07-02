@@ -3,9 +3,11 @@ import { FirstCtgy, SecondCtgy, ThirdCtgy } from '@/store/ctgy/state'
 import ctgyStore from '@/piniastore/ctgy'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
+import booksStore, {Operate} from '@/piniastore/books'
 
 class FstToThrdCtgy {
   static store = ctgyStore()
+  static bkStore = booksStore()
   static storeRefs = storeToRefs(FstToThrdCtgy.store)
   static firstCtgyList: Ref<FirstCtgy[]> = ref([])
   static secondCtgyList: Ref<SecondCtgy[]> = ref([])
@@ -38,6 +40,7 @@ class FstToThrdCtgy {
   }
   static toBookInfo(thirdCtgy: ThirdCtgy) {
     FstToThrdCtgy.store.storeCtgy(thirdCtgy)
+    FstToThrdCtgy.bkStore.storeOperate(Operate.THRDCTGYID)
     router.push({ path: '/books', query: {thirdCtgyid: thirdCtgy.thirdctgyid} })
   }
 }

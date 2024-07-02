@@ -1,6 +1,8 @@
 import { ref } from 'vue'
+import router from '@/router'
 import searchStore, { initKeywordVal } from '@/piniastore/search'
 import { storeToRefs } from 'pinia'
+import bookStore, { Operate } from '@/piniastore/books'
 import storage from '@/utils/goodStorageUtil'
 import searchAPI from '@/api/SearchApi'
 import { showConfirmDialog } from 'vant';
@@ -8,6 +10,7 @@ import { showConfirmDialog } from 'vant';
 export default class SearchClass {
   static isOpenAutoComplete = ref(false)
   static store = searchStore()
+  static bkStore = bookStore()
   static storeRefs = storeToRefs(SearchClass.store)
   static searchKeywords = debounce(async () => {
     const keyword = SearchClass.store.keyword
@@ -27,6 +30,10 @@ export default class SearchClass {
   static async searchBookByKey(historyKeyword: string) {
     await SearchClass.store.addOrUpdateHistoryKeyword(historyKeyword)
     SearchClass.isOpenAutoComplete.value = false
+    SearchClass.bkStore.storeOperate(Operate.AUTOCOMPKEYWORD)
+    SearchClass.store.storeAutoCompKeyword(historyKeyword)
+    // router.push({path: '/books'})
+    router.back()
   }
   static async resetKeywords() {
     const keyword = SearchClass.store.keyword
@@ -45,7 +52,6 @@ export default class SearchClass {
     SearchClass.store.searchDecovery()
   }
   static deleteSearch() {
-    console.log(SearchClass.storeRefs.getHistoryKeywordList.value, 'kkkk')
     if(SearchClass.storeRefs.getHistoryKeywordList.value.length <= 0) return
     showConfirmDialog({
       title: '删除搜索',
